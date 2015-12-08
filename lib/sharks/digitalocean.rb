@@ -1,5 +1,6 @@
 require 'http'
 require 'json'
+require 'terminal-table'
 
 module Sharks
   class DigitalOcean
@@ -13,7 +14,22 @@ module Sharks
       }).get("https://api.digitalocean.com/v2/droplets")
 
       json = JSON.parse(response.body.to_s)
-      json["droplets"]
+
+      rows = []
+      json["droplets"].each do |d|
+        if d['name'] == 'shark'
+          rows << [
+            d['id'], 
+            d['name'], 
+            d['status'], 
+            d['networks']['v4'][0]['ip_address'], 
+            d['region']['name'], 
+            d['size']['price_hourly']
+          ]
+        end
+      end
+
+      Terminal::Table.new :headings => ['ID', 'Name', 'Status', 'IP', 'Region', 'Price Hourly'], :rows => rows
     end
 
     def create(instances)
