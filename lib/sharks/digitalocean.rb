@@ -15,7 +15,7 @@ module Sharks
       ssh_key = JSON.parse(response.body)['ssh_keys'].first['id']
 
       for i in 1..instances.to_i
-        HTTP.headers(request_headers).post("https://api.digitalocean.com/v2/droplets", json: { 
+        HTTP.headers(request_headers).post("https://api.digitalocean.com/v2/droplets", json: {
           name: "shark",
           region: "nyc3",
           size: "512mb",
@@ -36,14 +36,14 @@ module Sharks
       HTTP.headers(request_headers).delete("https://api.digitalocean.com/v2/droplets/#{id}")
     end
 
-    private 
+    private
 
     def request_headers
       {
-        accept: "application/json", 
+        accept: "application/json",
         authorization: "Bearer 158f23060f07d9880bd8076a2cba88d4b90b51011f60675b15392e3bb473db6f"
       }
-    end 
+    end
 
   end
 end
