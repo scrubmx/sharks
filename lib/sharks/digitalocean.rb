@@ -38,6 +38,8 @@ module Sharks
 
     private
 
+    # Test authorization token.
+    # TODO: extract the token to a environment variable.
     def request_headers
       {
         accept: "application/json",
