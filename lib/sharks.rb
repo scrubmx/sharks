@@ -33,11 +33,16 @@ module Sharks
       droplets = digitalocean.droplets
       sharks = droplets.select { |droplet| droplet['name'] == 'shark' }
 
-      # TODO: use threads to load test in parallel
+      threads = []
+
       sharks.each do |shark|
         host = shark['networks']['v4'].first['ip_address']
-        load_test host, options[:url]
+        threads << Thread.new {
+          load_test host, options[:url]
+        }
       end
+
+      threads.each { |thread| thread.join }
     end
 
     desc 'report', 'Report the status of the load testing servers.'
@@ -74,8 +79,11 @@ module Sharks
 
     def load_test(host, target_url)
       ssh = Net::SSH.start(host, 'root')
+      puts "Shark #{host} is joining the swarm..."
       ssh.exec!('sudo apt-get install apache2-utils -y > /dev/null')
-      puts ssh.exec!("ab -n 500 -c 100 #{target_url}")
+      puts "Shark #{host} firing his lazer, pew pew pew!"
+      ssh.exec!("ab -n 1000 -c 100 #{target_url}")
+      puts "Shark #{host} is out of ammo."
     end
 
     def warning(message)
